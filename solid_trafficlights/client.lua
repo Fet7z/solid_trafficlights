@@ -3,7 +3,6 @@ local entityEnumerator = {
 		if enum.destructor and enum.handle then
 			enum.destructor(enum.handle)
 		end
-
 		enum.destructor = nil
 		enum.handle = nil
 	end
@@ -16,16 +15,13 @@ local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
 			disposeFunc(iter)
 			return
 		end
-
 		local enum = {handle = iter, destructor = disposeFunc}
 		setmetatable(enum, entityEnumerator)
-
 		local next = true
 		repeat
 		coroutine.yield(id)
 		next, id = moveFunc(iter)
 		until not next
-
 		enum.destructor, enum.handle = nil, nil
 		disposeFunc(iter)
 	end)
@@ -50,20 +46,14 @@ CreateThread(function()
 	local propsHash = {}
 	for i=1,#props do
 		propsHash[GetHashKey(props[i])] = true
-		-- print (GetHashKey(props[i]))
 	end
 	while true do
 		sleepThread = 500
-
 		local player = PlayerPedId()
 		local pCoords = GetEntityCoords(player)
-
 		local moveDst = #(pCoords - cachedPlayerCoords)
-
 		if moveDst >= 50.0 then
-			print("Triggerd")
 			cachedPlayerCoords = pCoords
-
 			for v in EnumerateObjects() do
 				if propsHash[GetEntityModel(v)] then
 					FreezeEntityPosition(v, true)
@@ -71,7 +61,6 @@ CreateThread(function()
 				end
 			end
 		end
-
 		Wait(sleepThread)
 	end
 end)
